@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Розклад 6-В - Пошук по вчителю/дню</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .search-box input,
+        .search-box select {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .search-box input:focus,
+        .search-box select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .search-box input {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .search-box select {
+            min-width: 150px;
+        }
+        
+        .search-box button {
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .search-box button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .results {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .lesson-card {
+            background: #f8f9ff;
+            border-left: 5px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .lesson-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .lesson-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .lesson-time {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .lesson-day {
+            background: #e8eaf6;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .lesson-subject {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .lesson-teacher {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .zoom-link {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .zoom-link:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+        
+        .no-link {
+            display: inline-block;
+            background: #ccc;
+            color: #666;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        
+        .no-results {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            font-size: 16px;
+        }
+        
+        .stats {
+            background: #e8eaf6;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        
+        .day-section {
+            margin-bottom: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .day-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .day-content {
+            background: #f8f9ff;
+        }
+        
+        .lesson-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+        
+        .lesson-item:hover {
+            background: #eff1f8;
+            transform: translateX(5px);
+        }
+        
+        .lesson-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 16px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .lesson-info {
+            flex-grow: 1;
+        }
+        
+        .lesson-info-top {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+            align-items: center;
+        }
+        
+        .lesson-time-small {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 14px;
+        }
+        
+        .lesson-subject-small {
+            font-weight: 600;
+            color: #333;
+            font-size: 15px;
+        }
+        
+        .lesson-teacher-small {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .search-box {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Розклад 6-В</h1>
+        <p class="subtitle">Розклад на весь тиждень</p>
+        
+        <div class="search-box">
+            <input type="text" id="teacherSearch" placeholder="🔍 Пошук по вчителю (Ізотова, Чорна...)">
+            <button onclick="search()">Пошук</button>
+            <button onclick="reset()" style="background: #666;">Очистити</button>
+        </div>
+        
+        <div id="scheduleView"></div>
+        <div id="searchResults" class="results" style="display: none;"></div>
+        <div id="stats" class="stats"></div>
+    </div>
+
+    <script>
+        const schedule = [
+            // Понеділок
+            { day: "Понеділок", time: "8:30–9:15", lesson: 1, subject: "Математика", teacher: "Ізотова О.В.", zoom: "https://us04web.zoom.us/j/76819270844?pwd=ITIuk5ttUqsqJEs25bXeKEXUAATVd0.1" },
+            { day: "Понеділок", time: "9:30–10:15", lesson: 2, subject: "Фізкультура", teacher: "Касапов К.В.", zoom: null },
+            { day: "Понеділок", time: "10:25–11:10", lesson: 3, subject: "Українська мова", teacher: "Бученко О.П.", zoom: "https://us05web.zoom.us/j/3744916636?pwd=FwqIItaI6FR2OhI3uDSAjZkj1qdqBN.1" },
+            { day: "Понеділок", time: "11:30–12:15", lesson: 4, subject: "Зарубіжна література", teacher: "Мельник І.О.", zoom: "https://us04web.zoom.us/j/75522022321?pwd=fytraaYRKWDTck9Utla02fQEIB1JVb.1" },
+            { day: "Понеділок", time: "13:40–14:25", lesson: 6, subject: "Здоров'я, безпека, динаміка", teacher: "Ярошенко М.М.", zoom: "https://us05web.zoom.us/j/81548042640?pwd=RTlpQVZNWWkwVUxQTnF4VnlyNjFVZz09" },
+            { day: "Понеділок", time: "14:35–15:20", lesson: 7, subject: "Німецька мова", teacher: "Чорна В.В.", zoom: "https://us04web.zoom.us/j/2568116627?pwd=TVFRV0d6YjJKSE1zYXUzOGZDS3RZZz09" },
+            { day: "Понеділок", time: "15:30–16:15", lesson: 8, subject: "Технологія", teacher: "Мацієвська С.О.", zoom: "https://us05web.zoom.us/j/82629109019?pwd=L0F3WnlnZThhNGZqTk55TWFRTkhzZz09" },
+            
+            // Вівторок
+            { day: "Вівторок", time: "8:30–9:15", lesson: 1, subject: "Німецька мова", teacher: "Чорна В.В.", zoom: "https://us04web.zoom.us/j/2568116627?pwd=TVFRV0d6YjJKSE1zYXUzOGZDS3RZZz09" },
+            { day: "Вівторок", time: "9:30–10:15", lesson: 2, subject: "Математика", teacher: "Ізотова О.В.", zoom: "https://us04web.zoom.us/j/76819270844?pwd=ITIuk5ttUqsqJEs25bXeKEXUAATVd0.1" },
+            { day: "Вівторок", time: "10:25–11:10", lesson: 3, subject: "Українська література", teacher: "Кицюк О.В.", zoom: "https://us05web.zoom.us/j/3744916636?pwd=FwqIItaI6FR2OhI3uDSAjZkj1qdqBN.1" },
+            { day: "Вівторок", time: "11:30–12:15", lesson: 4, subject: "Пізнаю природу", teacher: "Куценко Л.Г.", zoom: "https://us04web.zoom.us/j/74569540538?pwd=xdOEFPBl56IQwXCBtWjMiujgvUbunY.1" },
+            { day: "Вівторок", time: "13:40–14:25", lesson: 6, subject: "Українська мова", teacher: "Бученко О.П.", zoom: "https://us05web.zoom.us/j/3744916636?pwd=FwqIItaI6FR2OhI3uDSAjZkj1qdqBN.1" },
+            { day: "Вівторок", time: "14:35–15:20", lesson: 7, subject: "Пізнаю природу", teacher: "Куценко Л.Г.", zoom: "https://us04web.zoom.us/j/74569540538?pwd=xdOEFPBl56IQwXCBtWjMiujgvUbunY.1" },
+            { day: "Вівторок", time: "15:30–16:15", lesson: 8, subject: "Англійська мова", teacher: "Бойко Л.П.", zoom: "https://us04web.zoom.us/j/6712546006?pwd=dGoyeHVPSVRQN09qRUtPL2NPU0l4Zz09" },
+            
+            // Середа
+            { day: "Середа", time: "8:30–9:15", lesson: 1, subject: "Інформатика", teacher: "Анжела Володимирівна", zoom: "https://us04web.zoom.us/j/6322025637?pwd=OXVLVGZyNjRycWdJclFiQXI1RG5iZz09" },
+            { day: "Середа", time: "9:30–10:15", lesson: 2, subject: "Фізкультура", teacher: "Касапов К.В.", zoom: null },
+            { day: "Середа", time: "10:25–11:10", lesson: 3, subject: "Українська мова", teacher: "Бученко О.П.", zoom: "https://us05web.zoom.us/j/3744916636?pwd=FwqIItaI6FR2OhI3uDSAjZkj1qdqBN.1" },
+            { day: "Середа", time: "11:30–12:15", lesson: 4, subject: "Математика", teacher: "Ізотова О.В.", zoom: "https://us04web.zoom.us/j/76819270844?pwd=ITIuk5ttUqsqJEs25bXeKEXUAATVd0.1" },
+            { day: "Середа", time: "13:40–14:25", lesson: 6, subject: "Німецька мова", teacher: "Чорна В.В.", zoom: "https://us04web.zoom.us/j/2568116627?pwd=TVFRV0d6YjJKSE1zYXUzOGZDS3RZZz09" },
+            { day: "Середа", time: "14:35–15:20", lesson: 7, subject: "Всесвітня історія", teacher: "Іващенко Т.А.", zoom: "https://us04web.zoom.us/j/76841394609?pwd=b5iAqwa0PAgGVhNU5jsxCkjoX6TZ30.1" },
+            { day: "Середа", time: "15:30–16:15", lesson: 8, subject: "Географія", teacher: "Топалова О.М.", zoom: "https://us05web.zoom.us/j/83159038833?pwd=2hJqbThRr4wM07bzmzTa8neiQeZtBm.1" },
+            
+            // Четвер
+            { day: "Четвер", time: "8:30–9:15", lesson: 1, subject: "Математика", teacher: "Ізотова О.В.", zoom: "https://us04web.zoom.us/j/76819270844?pwd=ITIuk5ttUqsqJEs25bXeKEXUAATVd0.1" },
+            { day: "Четвер", time: "9:30–10:15", lesson: 2, subject: "Німецька мова", teacher: "Чорна В.В.", zoom: "https://us04web.zoom.us/j/2568116627?pwd=TVFRV0d6YjJKSE1zYXUzOGZDS3RZZz09" },
+            { day: "Четвер", time: "10:25–11:10", lesson: 3, subject: "Англійська мова", teacher: "Бойко Л.П.", zoom: "https://us04web.zoom.us/j/6712546006?pwd=dGoyeHVPSVRQN09qRUtPL2NPU0l4Zz09" },
+            { day: "Четвер", time: "11:30–12:15", lesson: 4, subject: "Українська мова", teacher: "Бученко О.П.", zoom: "https://us05web.zoom.us/j/3744916636?pwd=FwqIItaI6FR2OhI3uDSAjZkj1qdqBN.1" },
+            { day: "Четвер", time: "13:40–14:25", lesson: 6, subject: "Зарубіжна література", teacher: "Мельник І.О.", zoom: "https://us04web.zoom.us/j/75522022321?pwd=fytraaYRKWDTck9Utla02fQEIB1JVb.1" },
+            { day: "Четвер", time: "14:35–15:20", lesson: 7, subject: "Математика", teacher: "Ізотова О.В.", zoom: "https://us04web.zoom.us/j/76819270844?pwd=ITIuk5ttUqsqJEs25bXeKEXUAATVd0.1" },
+            { day: "Четвер", time: "15:30–16:15", lesson: 8, subject: "Мистецтво", teacher: "Фастівець О.Ю.", zoom: "https://us04web.zoom.us/j/8291611842?pwd=jx6pkX214fjmzOlPhaGRmCx4EfNJTM.1" },
+            
+            // П'ятниця
+            { day: "П'ятниця", time: "8:30–9:15", lesson: 1, subject: "Німецька мова", teacher: "Чорна В.В.", zoom: "https://us04web.zoom.us/j/2568116627?pwd=TVFRV0d6YjJKSE1zYXUzOGZDS3RZZz09" },
+            { day: "П'ятниця", time: "9:30–10:15", lesson: 2, subject: "Географія", teacher: "Топалова О.М.", zoom: "https://us05web.zoom.us/j/83159038833?pwd=2hJqbThRr4wM07bzmzTa8neiQeZtBm.1" },
+            { day: "П'ятниця", time: "10:25–11:10", lesson: 3, subject: "Фізкультура", teacher: "Касапов К.В.", zoom: null },
+            { day: "П'ятниця", time: "11:30–12:15", lesson: 4, subject: "Історія України", teacher: "Іващенко Т.А.", zoom: "https://us04web.zoom.us/j/76841394609?pwd=b5iAqwa0PAgGVhNU5jsxCkjoX6TZ30.1" },
+            { day: "П'ятниця", time: "13:40–14:25", lesson: 6, subject: "Математика", teacher: "Ізотова О.В.", zoom: "https://us04web.zoom.us/j/76819270844?pwd=ITIuk5ttUqsqJEs25bXeKEXUAATVd0.1" },
+            { day: "П'ятниця", time: "14:35–15:20", lesson: 7, subject: "Українська література", teacher: "Кицюк О.В.", zoom: "https://us05web.zoom.us/j/3744916636?pwd=FwqIItaI6FR2OhI3uDSAjZkj1qdqBN.1" }
+        ];
+
+        const days = ["Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця"];
+        
+        function renderByDays(data) {
+            const scheduleDiv = document.getElementById('scheduleView');
+            const statsDiv = document.getElementById('stats');
+            
+            const dayMap = {};
+            days.forEach(day => dayMap[day] = []);
+            
+            data.forEach(lesson => {
+                dayMap[lesson.day].push(lesson);
+            });
+            
+            scheduleDiv.innerHTML = days.map(day => {
+                const dayLessons = dayMap[day];
+                if (dayLessons.length === 0) return '';
+                
+                return `
+                    <div class="day-section">
+                        <div class="day-header">📅 ${day}</div>
+                        <div class="day-content">
+                            ${dayLessons.map(lesson => `
+                                <div class="lesson-item">
+                                    <div class="lesson-number">${lesson.lesson}</div>
+                                    <div class="lesson-info">
+                                        <div class="lesson-info-top">
+                                            <span class="lesson-time-small">⏰ ${lesson.time}</span>
+                                        </div>
+                                        <div class="lesson-subject-small">📚 ${lesson.subject}</div>
+                                        <div class="lesson-teacher-small">👨‍🏫 ${lesson.teacher}</div>
+                                    </div>
+                                    ${lesson.zoom ? 
+                                        `<a href="${lesson.zoom}" target="_blank" class="zoom-link" style="margin-left: 10px;">🎥 Zoom</a>` :
+                                        `<span class="no-link" style="margin-left: 10px;">❌</span>`
+                                    }
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            statsDiv.innerHTML = '';
+        }
+        
+        function renderSearchResults(data) {
+            const resultsDiv = document.getElementById('searchResults');
+            const scheduleDiv = document.getElementById('scheduleView');
+            const statsDiv = document.getElementById('stats');
+            
+            if (data.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-results">😢 Уроків не знайдено. Спробуйте інший пошук.</div>';
+                scheduleDiv.style.display = 'none';
+                resultsDiv.style.display = 'block';
+                statsDiv.innerHTML = '';
+                return;
+            }
+            
+            const dayMap = {};
+            days.forEach(day => dayMap[day] = []);
+            
+            data.forEach(lesson => {
+                dayMap[lesson.day].push(lesson);
+            });
+            
+            resultsDiv.innerHTML = days.map(day => {
+                const dayLessons = dayMap[day];
+                if (dayLessons.length === 0) return '';
+                
+                return `
+                    <div class="day-section">
+                        <div class="day-header">📅 ${day}</div>
+                        <div class="day-content">
+                            ${dayLessons.map(lesson => `
+                                <div class="lesson-item">
+                                    <div class="lesson-number">${lesson.lesson}</div>
+                                    <div class="lesson-info">
+                                        <div class="lesson-info-top">
+                                            <span class="lesson-time-small">⏰ ${lesson.time}</span>
+                                        </div>
+                                        <div class="lesson-subject-small">📚 ${lesson.subject}</div>
+                                        <div class="lesson-teacher-small">👨‍🏫 ${lesson.teacher}</div>
+                                    </div>
+                                    ${lesson.zoom ? 
+                                        `<a href="${lesson.zoom}" target="_blank" class="zoom-link" style="margin-left: 10px;">🎥 Zoom</a>` :
+                                        `<span class="no-link" style="margin-left: 10px;">❌</span>`
+                                    }
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            scheduleDiv.style.display = 'none';
+            resultsDiv.style.display = 'block';
+            statsDiv.innerHTML = `<strong>📊 Знайдено уроків:</strong> ${data.length}`;
+        }
+
+        function search() {
+            const teacher = document.getElementById('teacherSearch').value.toLowerCase();
+            
+            if (!teacher) {
+                reset();
+                return;
+            }
+            
+            let results = schedule.filter(lesson => lesson.teacher.toLowerCase().includes(teacher));
+            renderSearchResults(results);
+        }
+
+        function reset() {
+            document.getElementById('teacherSearch').value = '';
+            document.getElementById('scheduleView').style.display = 'block';
+            document.getElementById('searchResults').style.display = 'none';
+            renderByDays(schedule);
+        }
+
+        // Показати розклад по днях при завантаженні
+        renderByDays(schedule);
+        
+        // Пошук при введенні
+        document.getElementById('teacherSearch').addEventListener('keyup', search);
+    </script>
+</body>
+</html>
