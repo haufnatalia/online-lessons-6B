@@ -23,7 +23,8 @@
         .lesson-info { flex-grow: 1; }
         .lesson-subject-small { font-weight: 600; color: #333; font-size: 15px; }
         .lesson-teacher-small { color: #666; font-size: 13px; }
-        .zoom-link { display: inline-block; background: #4CAF50; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-size: 12px; margin-left: 10px; }
+        .zoom-link { display: inline-block; background: #4CAF50; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; margin-left: 10px; transition: all 0.3s; }
+        .zoom-link:hover { background: #45a049; transform: scale(1.05); }
         .no-link { display: inline-block; background: #ccc; color: #666; padding: 8px 15px; border-radius: 6px; font-size: 12px; margin-left: 10px; }
         .no-results { text-align: center; color: #999; padding: 40px 20px; }
         .stats { background: #e8eaf6; padding: 15px; border-radius: 8px; text-align: center; color: #667eea; font-weight: 600; margin-top: 20px; }
@@ -50,7 +51,7 @@
             { day: "Понеділок", time: "11:30–12:15", lesson: 4, subject: "Зарубіжна література", teacher: "Мельник І.О.", zoom: "https://us04web.zoom.us/j/75522022321?pwd=fytraaYRKWDTck9Utla02fQEIB1JVb.1" },
             { day: "Понеділок", time: "13:40–14:25", lesson: 6, subject: "Здоров'я, безпека і добробут", teacher: "Ярошенко М.М.", zoom: "https://us05web.zoom.us/j/81548042640?pwd=RTlpQVZNWWkwVUxQTnF4VnlyNjFVZz09" },
             { day: "Понеділок", time: "14:35–15:20", lesson: 7, subject: "Німецька мова", teacher: "Чорна В.В.", zoom: "https://us04web.zoom.us/j/2568116627?pwd=TVFRV0d6YjJKSE1zYXUzOGZDS3RZZz09" },
-            { day: "Понеділок", time: "15:30–16:15", lesson: 8, subject: "Технології", teacher: "Мацієвська С.О.", zoom: "https://us05web.zoom.us/j/82629109019?pwd=L0F3WnlnZThhNGZqTk55TWFRTkhzZz09" },
+            { day: "Понеділок", time: "15:30–16:15", lesson: 8, subject: "Технологія", teacher: "Мацієвська С.О.", zoom: "https://us05web.zoom.us/j/82629109019?pwd=L0F3WnlnZThhNGZqTk55TWFRTkhzZz09" },
             { day: "Вівторок", time: "8:30–9:15", lesson: 1, subject: "Німецька мова", teacher: "Чорна В.В.", zoom: "https://us04web.zoom.us/j/2568116627?pwd=TVFRV0d6YjJKSE1zYXUzOGZDS3RZZz09" },
             { day: "Вівторок", time: "9:30–10:15", lesson: 2, subject: "Математика", teacher: "Ізотова О.В.", zoom: "https://us04web.zoom.us/j/76819270844?pwd=ITIuk5ttUqsqJEs25bXeKEXUAATVd0.1" },
             { day: "Вівторок", time: "10:25–11:10", lesson: 3, subject: "Українська література", teacher: "Кицюк О.В.", zoom: "https://us05web.zoom.us/j/3744916636?pwd=FwqIItaI6FR2OhI3uDSAjZkj1qdqBN.1" },
@@ -94,7 +95,7 @@
             data.forEach(lesson => dayMap[lesson.day].push(lesson));
             const html = days.map(day => {
                 if (dayMap[day].length === 0) return '';
-                return `<div class="day-section"><div class="day-header">📅 ${day}</div><div class="day-content">${dayMap[day].map(lesson => `<div class="lesson-item"><div class="lesson-number">${lesson.lesson}</div><div class="lesson-info"><span style="font-weight: 600; color: #667eea;">⏰ ${lesson.time}</span><div class="lesson-subject-small">📚 ${lesson.subject}</div><div class="lesson-teacher-small">👨‍🏫 ${lesson.teacher}</div></div>${lesson.zoom ? `<a href="${lesson.zoom}" target="_blank" class="zoom-link">🎥</a>` : '<span class="no-link">❌</span>'}</div>`).join('')}</div></div>`;
+                return `<div class="day-section"><div class="day-header">📅 ${day}</div><div class="day-content">${dayMap[day].map(lesson => `<div class="lesson-item"><div class="lesson-number">${lesson.lesson}</div><div class="lesson-info"><span style="font-weight: 600; color: #667eea;">⏰ ${lesson.time}</span><div class="lesson-subject-small">📚 ${lesson.subject}</div><div class="lesson-teacher-small">👨‍🏫 ${lesson.teacher}</div></div>${lesson.zoom ? `<a href="${lesson.zoom}" target="_blank" class="zoom-link">🎥 Приєднатись на урок</a>` : '<span class="no-link">❌</span>'}</div>`).join('')}</div></div>`;
             }).join('');
             if (data.length === schedule.length) {
                 document.getElementById('scheduleView').innerHTML = html;
